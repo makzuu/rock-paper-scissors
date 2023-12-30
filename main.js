@@ -5,81 +5,89 @@ function getComputerChoice() {
 }
 
 function playRound(playerSelection, computerSelection) {
-    switch(playerSelection.toLowerCase()) {
-        case 'rock':
-            playerSelection = 'Rock'
+    switch(playerSelection) {
+        case 'Rock':
             switch (computerSelection) {
                 case 'Rock':
-                    return 'Tie!'
+                    return TIE
                     break
                 case 'Paper':
-                    return `You Lose! ${computerSelection} beats ${playerSelection}`
+                    return COMPUTER_ROUND
                     break
                 case 'Scissors':
-                    return `You Win! ${playerSelection} beats ${computerSelection}`
+                    return PLAYER_ROUND
                     break
             }
             break
-        case 'paper':
-            playerSelection = 'Paper'
+        case 'Paper':
             switch (computerSelection) {
                 case 'Rock':
-                    return `You Win! ${playerSelection} beats ${computerSelection}`
+                    return PLAYER_ROUND
                     break
                 case 'Paper':
-                    return 'Tie!'
+                    return TIE
                     break
                 case 'Scissors':
-                    return `You Lose! ${computerSelection} beats ${playerSelection}`
+                    return COMPUTER_ROUND
                     break
             }
             break
-        case 'scissors':
-            playerSelection = 'scissors'
+        case 'Scissors':
             switch (computerSelection) {
                 case 'Rock':
-                    return `You Lose! ${computerSelection} beats ${playerSelection}`
+                    return COMPUTER_ROUND
                     break
                 case 'Paper':
-                    return `You Win! ${playerSelection} beats ${computerSelection}`
+                    return PLAYER_ROUND
                     break
                 case 'Scissors':
-                    return 'Tie!'
+                    return TIE
                     break
             }
             break
     }
 }
 
-function game() {
-    let playerScore = 0
-    let computerScore = 0
-    let roundsLeft = 5
+const PLAYER_ROUND = 0
+const COMPUTER_ROUND = 1
+const TIE = 2
 
-    while (roundsLeft > 0) {
-        const playerSelection = prompt('Your choice:')
-        const computerSelection = getComputerChoice()
+const buttons = document.querySelector("#buttons");
+const resultDisplay = document.querySelector("#result");
+const scoreDisplay = document.querySelector("#score");
 
-        const result = playRound(playerSelection, computerSelection)
+let playerScore = 0;
+let computerScore = 0;
 
-        if (result.substring(0, 7) === 'You Win') {
-            playerScore++
-        } else if (result.substring(0, 8) === 'You Lose') {
-            computerScore++
-        }
+buttons.addEventListener("click", (event) => {
+    const playerSelection = event.target.id;
+    const computerSelection = getComputerChoice();
 
-        console.log(result)
+    const roundResult = playRound(playerSelection, computerSelection);
+    switch (roundResult) {
+        case PLAYER_ROUND:
+            resultDisplay.textContent = `You Win! ${playerSelection} beats ${computerSelection}`;
+            playerScore++;
+            if (playerScore === 5) {
+                playerScore = 0;
+                computerScore = 0;
+                resultDisplay.textContent = "Player wins! press any button to play again...";
+            }
+            break;
 
-        if (result !== 'Tie!') {
-            roundsLeft--
-        }
+        case COMPUTER_ROUND:
+            resultDisplay.textContent = `You Lose! ${computerSelection} beats ${playerSelection}`;
+            computerScore++;
+            if (computerScore === 5) {
+                playerScore = 0;
+                computerScore = 0;
+                resultDisplay.textContent = "Computer wins! press any button to play again...";
+            }
+            break;
+
+        case TIE:
+            resultDisplay.textContent = "Tie";
+            break;
     }
-
-    if (playerScore > computerScore) {
-        console.log(`Player Wins! (${playerScore} - ${computerScore})`)
-    } else {
-        console.log(`Computer Wins! (${computerScore} - ${playerScore})`)
-    }
-}
-
-game()
+    scoreDisplay.textContent = `player: ${playerScore} - computer: ${computerScore}`;
+});
